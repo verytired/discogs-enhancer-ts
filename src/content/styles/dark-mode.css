@@ -1,0 +1,16 @@
+body.discogs-enhancer-dark-mode {
+  background-color: #121212 !important;
+  color: #e0e0e0 !important;
+}
+
+body.discogs-enhancer-dark-mode a {
+  color: #bb86fc !important;
+}
+
+body.discogs-enhancer-dark-mode .card, 
+body.discogs-enhancer-dark-mode .box {
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
+}
+
+/* Add more specific selectors as we discover them */

@@ -1,0 +1,28 @@
+# Tasks
+
+- [x] プロジェクトの初期セットアップ
+    - [x] Vite + TypeScript + React プロジェクトの作成
+    - [x] CRXJS プラグインの導入と設定
+    - [x] リンター・フォーマッターの設定 (ESLint, Prettier)
+- [x] 基盤実装
+    - [x] manifest.json の構成 (Manifest V3)
+    - [x] Content Script の疎通確認
+    - [x] Popup UI の基盤実装
+    - [x] Storage Utils の実装 (設定保存用)
+- [x] 機能実装: ユーザー設定管理
+    - [x] 設定画面 (Options Page) の作成
+    - [x] 機能のON/OFF切り替えロジック
+- [x] 機能実装: ダークモード
+    - [x] CSS注入ロジックの実装
+    - [x] テーマ切り替え機能
+- [x] 機能実装: マーケットプレイス拡張
+    - [x] ページ解析ロジック (DOM Utils)
+    - [x] 在庫フィルター機能 (サンプル実装)
+- [x] 機能実装: Demand Index (需要指数)
+    - [x] 設定項目の追加 (Storage/UI)
+    - [x] 比率計算と表示ロジックの実装
+- [x] 機能実装: Apple Music 表示切替
+    - [x] 設定項目の追加 (Show Apple Music)
+    - [x] Apple Music 要素の検出と表示制御ロジック
+- [ ] CI/CD (オプション)
+    - [ ] GitHub Actions 設定

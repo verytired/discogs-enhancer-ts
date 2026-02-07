@@ -33,9 +33,14 @@ watchSettings((changes) => {
     }
 })
 
-// Example of interaction
+// Basic debounce to prevent too many calls
+let timeoutId: any
 const observer = new MutationObserver(() => {
-    // Logic to detect page changes (e.g., AutoPagerize) will go here
+    if (timeoutId) clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+        // Re-apply demand index on DOM changes (e.g. navigation, lazy load)
+        initDemandIndex()
+    }, 500)
 })
 
 observer.observe(document.body, {

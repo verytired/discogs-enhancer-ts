@@ -1,7 +1,7 @@
 import { getSettings, watchSettings } from '../utils/storage'
 import './styles/dark-mode.css'
 import { initMarketplace } from './marketplace'
-import { initDemandIndex } from './demand-index'
+import { initDemandIndex, removeDemandIndex } from './demand-index'
 import { initAppleMusic, applyAppleMusicState } from './apple-music'
 
 console.info('Discogs Enhancer: Content script loaded')
@@ -30,6 +30,13 @@ watchSettings((changes) => {
     }
     if (changes.hideAppleMusic !== undefined) {
         applyAppleMusicState(changes.hideAppleMusic!)
+    }
+    if (changes.demandIndex !== undefined) {
+        if (changes.demandIndex) {
+            initDemandIndex()
+        } else {
+            removeDemandIndex()
+        }
     }
 })
 

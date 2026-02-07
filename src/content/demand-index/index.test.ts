@@ -18,14 +18,16 @@ describe('Demand Index Logic (v0.1.3)', () => {
 
     it('Legacy Layout: should inject demand index correctly', async () => {
         document.body.innerHTML = `
-            <div class="statistics">
-                <div class="section_content">
-                    <ul>
-                        <li>Have: 100</li>
-                        <li>Want: 50</li>
-                    </ul>
+            <section>
+                <div class="statistics">
+                    <div class="section_content">
+                        <ul>
+                            <li>Have: 100</li>
+                            <li>Want: 50</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            </section>
         `
 
         await initDemandIndex()
@@ -73,5 +75,30 @@ describe('Demand Index Logic (v0.1.3)', () => {
         expect(container).not.toBeNull()
         // 576 / 3939 = 0.146... -> 0.15
         expect(container?.textContent).toContain('0.15')
+    })
+
+    it('Japanese Layout: should inject demand index correctly', async () => {
+        document.body.innerHTML = `
+            <section>
+                <ul>
+                    <li>
+                        <span>持っている:</span>
+                        <a href="#">100</a>
+                    </li>
+                    <li>
+                        <span>欲しい:</span>
+                        <a href="#">20</a>
+                    </li>
+                </ul>
+            </section>
+        `
+
+        await initDemandIndex()
+        await vi.advanceTimersByTimeAsync(3100)
+
+        const container = document.querySelector('.discogs-enhancer-demand-container')
+        expect(container).not.toBeNull()
+        // 20 / 100 = 0.20
+        expect(container?.textContent).toContain('0.20')
     })
 })

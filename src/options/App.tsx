@@ -53,10 +53,10 @@ function App() {
         <label>
           <input
             type="checkbox"
-            checked={settings.appleMusic}
-            onChange={() => toggleSetting('appleMusic')}
+            checked={settings.hideAppleMusic}
+            onChange={() => toggleSetting('hideAppleMusic')}
           />
-          Show Apple Music
+          Hide Apple Music
         </label>
       </div>
     </div>

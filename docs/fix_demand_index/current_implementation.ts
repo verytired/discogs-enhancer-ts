@@ -15,42 +15,40 @@ export const applyDemandIndex = () => {
     console.info('Discogs Enhancer: Applying Demand Index...')
 
     // Improved Strategy: Find the "Have:" and "Want:" elements directly.
-    const anchors = $$('a') // Also broad search below covers non-anchors
+    // They are usually <a> tags or inside <li>s.
+    const anchors = $$('a')
     let haveElement: HTMLElement | null = null
     let wantElement: HTMLElement | null = null
 
-    // Helper to check text
-    const isHave = (t: string) => t.includes('Have:') && !t.includes('Demand Index')
-    const isWant = (t: string) => t.includes('Want:')
-
     for (const a of anchors) {
         const text = a.textContent || ''
-        if (isHave(text)) {
+        if (text.includes('Have:') && !text.includes('Demand Index')) {
             haveElement = a
-        } else if (isWant(text)) {
+        } else if (text.includes('Want:')) {
             wantElement = a
         }
     }
 
-    // Fallback: search all elements (span, div, etc)
+    // Fallback: search all elements if not found in anchors (e.g., span, div)
     if (!haveElement || !wantElement) {
         const all = $$('*')
         for (const el of all) {
+            // Skip large containers
             if (el.tagName === 'BODY' || el.tagName === 'HTML' || el.scrollHeight > 500) continue
 
+            // Look for direct text content if possible, or very close
             const text = el.textContent || ''
-            // Must be leaf-ish (no children or children are not block elements usually)
-            // Checking children.length === 0 is strict but safe for "text node" wrappers.
-            if (!haveElement && isHave(text) && el.children.length === 0) {
+            if (!haveElement && text.includes('Have:') && !text.includes('Demand Index') && el.children.length === 0) {
                 haveElement = el
             }
-            if (!wantElement && isWant(text) && el.children.length === 0) {
+            if (!wantElement && text.includes('Want:') && el.children.length === 0) {
                 wantElement = el
             }
         }
     }
 
     if (!haveElement || !wantElement) {
+        // Silent return if not found (don't spam console if page doesn't have stats)
         return
     }
 
@@ -60,70 +58,68 @@ export const applyDemandIndex = () => {
         parent = parent.parentElement
     }
 
+    // If no common parent found (unlikely if on same page), or parent is body
     if (!parent || parent === document.body) {
         return
     }
 
     const statsSection = parent as HTMLElement
-    // Check if already applied
+    // console.info('Discogs Enhancer: Found stats section via Have/Want elements:', statsSection)
+
+    // Check if already applied to avoid duplicates
     if ($('.discogs-enhancer-demand-index', statsSection)) return
 
-    // Parse counts
-    // 1. Direct text
+    // Parse counts from the found elements (or use the old logic if that fails)
     let haveCount = parseCount(haveElement.textContent || '')
     let wantCount = parseCount(wantElement.textContent || '')
 
-    // 2. Parent text (Vital for live site where Have: is in span, number in sibling anchor)
-    if (haveCount === 0 && haveElement.parentElement) {
-        haveCount = parseCount(haveElement.parentElement.textContent || '')
-    }
-    if (wantCount === 0 && wantElement.parentElement) {
-        wantCount = parseCount(wantElement.parentElement.textContent || '')
-    }
-
-    // 3. List Item fallback (Iterate siblings if parent is UL)
+    // Fallback parsing if we found containers but not the numbers directly
     if (haveCount === 0 || wantCount === 0) {
         const items = $$('li', statsSection)
         items.forEach(item => {
             const text = item.textContent || ''
-            if (isHave(text)) haveCount = parseCount(text)
-            else if (isWant(text)) wantCount = parseCount(text)
+            if (text.includes('Have:') && !text.includes('Demand Index')) {
+                haveCount = parseCount(text)
+            } else if (text.includes('Want:')) {
+                wantCount = parseCount(text)
+            }
         })
     }
 
     if (haveCount > 0) {
         const ratio = (wantCount / haveCount).toFixed(2)
 
-        // Double check injection target to avoid duplicates
-        // We inject into 'parent' (e.g. LI's parent = UL) or 'statsSection'
+        // Check if we already added our container inside the parent
         if ($('.discogs-enhancer-demand-container', parent as HTMLElement)) return
 
         const demandContainer = create('div', {
             class: 'discogs-enhancer-demand-container',
-            style: 'padding: 5px 0; font-size: 13px; margin-top: 5px; color: #555;'
+            style: 'padding: 5px 0; font-size: 13px; margin-top: 5px;'
         }, [
             create('span', { class: 'link_text' }, ['Demand Index: ']),
             create('span', { style: 'font-weight: bold; color: #f00; margin-left: 5px;' }, [ratio])
         ])
 
+        // Insert after the stats section (the found parent)
+        // Wait, statsSection IS the parent. We want to append to it, or insert after it?
+        // Logic v0.1.2: parent.insertBefore(demandContainer, statsSection.nextSibling)
+        // If statsSection == parent, then parent.insertBefore(..., parent.nextSibling) tries to insert OUTSIDE parent.
+        // This is safer.
+
         if (parent.parentNode) {
             parent.parentNode.insertBefore(demandContainer, parent.nextSibling)
-            console.info(`Discogs Enhancer: Demand Index (${ratio}) added safely as sibling of`, parent)
+            console.info(`Discogs Enhancer: Demand Index (${ratio}) added safely as sibling.`)
         } else {
+            // Fallback: append to parent
             parent.appendChild(demandContainer)
         }
     }
 }
 
 const parseCount = (text: string): number => {
-    // Extract number. Relaxed regex to catch "3,939" in "Have: 3,939"
+    // Extract number from string like "Have: 1,234"
     const match = text.match(/[\d,.]+/)
     if (match) {
-        // Remove commas and dots (if dots are thousands separators? Discogs uses commas).
-        // But some locales use dots. safely remove commas. 
-        // If it's "1.234" (EU), parseInt(1.234) -> 1.
-        // Discogs English uses commas. 
-        // We'll strip commas.
         return parseInt(match[0].replace(/,/g, ''), 10)
     }
     return 0

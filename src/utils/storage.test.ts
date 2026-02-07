@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { getSettings, saveSettings, watchSettings, type UserSettings } from './storage'
+import { getSettings, saveSettings, type UserSettings } from './storage'
 
 // Mock chrome API
 const mockStorage = {

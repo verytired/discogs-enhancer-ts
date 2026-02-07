@@ -17,84 +17,96 @@ export const initDemandIndex = () => {
 const applyDemandIndex = () => {
     console.info('Discogs Enhancer: Applying Demand Index...')
 
-    // Strategy 1: Legacy Layout (.statistics .section_content)
-    let statsSection = $('.statistics .section_content')
+    // Improved Strategy: Find the "Have:" and "Want:" elements directly.
+    // They are usually <a> tags or inside <li>s.
+    const anchors = $$('a')
+    let haveElement: HTMLElement | null = null
+    let wantElement: HTMLElement | null = null
 
-    // Strategy 2: Newer Layout (often just .statistics or within a grid)
-    if (!statsSection) {
-        const allDivs = $$('div')
-        const found = allDivs.find(div => {
-            const text = div.textContent || ''
-            return text.includes('Have:') && text.includes('Want:') && (div.classList.contains('section_content') || div.classList.contains('statistics'))
-        })
-        if (found) statsSection = found
+    for (const a of anchors) {
+        const text = a.textContent || ''
+        if (text.includes('Have:') && !text.includes('Demand Index')) {
+            haveElement = a
+        } else if (text.includes('Want:')) {
+            wantElement = a
+        }
+    }
 
-        // DEBUG: Logic to help identify the structure if still not found
-        if (!statsSection) {
-            console.log('DEBUG: Stats section not found with class check. Searching all elements with Have/Want...')
-            const allElements = $$('*')
-            const potentialMatches = allElements.filter(el => {
-                return el.children.length > 0 && el.innerText?.includes('Have:') && el.innerText?.includes('Want:')
-            })
-            console.log('DEBUG: Potential matches found:', potentialMatches)
-            if (potentialMatches.length > 0) {
-                // Try to catch the smallest container
-                statsSection = potentialMatches[potentialMatches.length - 1] // often the last one is the most specific container
-                console.log('DEBUG: Selecting most specific container:', statsSection)
+    // Fallback: search all elements if not found in anchors (e.g., span, div)
+    if (!haveElement || !wantElement) {
+        const all = $$('*')
+        for (const el of all) {
+            // Skip large containers
+            if (el.tagName === 'BODY' || el.tagName === 'HTML' || el.scrollHeight > 500) continue
+
+            // Look for direct text content if possible, or very close
+            const text = el.textContent || ''
+            if (!haveElement && text.includes('Have:') && !text.includes('Demand Index') && el.children.length === 0) {
+                haveElement = el
+            }
+            if (!wantElement && text.includes('Want:') && el.children.length === 0) {
+                wantElement = el
             }
         }
     }
 
-    if (!statsSection) {
-        console.warn('Discogs Enhancer: Statistics section not found yet.')
+    if (!haveElement || !wantElement) {
+        console.warn('Discogs Enhancer: Could not find Have/Want elements individually.')
         return
     }
+
+    // Find common parent
+    let parent = haveElement.parentElement
+    while (parent && (!parent.contains(wantElement))) {
+        parent = parent.parentElement
+    }
+
+    // If no common parent found (unlikely if on same page), or parent is body
+    if (!parent || parent === document.body) {
+        console.warn('Discogs Enhancer: No suitable common parent found.')
+        return
+    }
+
+    const statsSection = parent as HTMLElement
+    console.info('Discogs Enhancer: Found stats section via Have/Want elements:', statsSection)
 
     // Check if already applied to avoid duplicates
     if ($('.discogs-enhancer-demand-index', statsSection)) return
 
-    const items = $$('li', statsSection)
-    // Fallback if not UL/LI, try searching text nodes or other structures if necessary
+    // Parse counts from the found elements (or use the old logic if that fails)
+    let haveCount = parseCount(haveElement.textContent || '')
+    let wantCount = parseCount(wantElement.textContent || '')
 
-    let haveCount = 0
-    let wantCount = 0
-
-    items.forEach(item => {
-        const text = item.textContent || ''
-        if (text.includes('Have:') && !text.includes('Demand Index')) {
-            haveCount = parseCount(text)
-        } else if (text.includes('Want:')) {
-            wantCount = parseCount(text)
-        }
-    })
+    // Fallback parsing if we found containers but not the numbers directly
+    if (haveCount === 0 || wantCount === 0) {
+        const items = $$('li', statsSection)
+        items.forEach(item => {
+            const text = item.textContent || ''
+            if (text.includes('Have:') && !text.includes('Demand Index')) {
+                haveCount = parseCount(text)
+            } else if (text.includes('Want:')) {
+                wantCount = parseCount(text)
+            }
+        })
+    }
 
     if (haveCount > 0) {
         const ratio = (wantCount / haveCount).toFixed(2)
 
-        // Anti-Crash Strategy:
-        // Do NOT append directly to the React-managed 'statsSection' (the <ul>).
-        // Instead, find its parent and insert a sibling, or create a safe container.
+        // Check if we already added our container
+        if ($('.discogs-enhancer-demand-container', parent as HTMLElement)) return
 
-        // If statsSection is UL, its parent is often div.section_content
-        const parent = statsSection.parentNode
-        if (parent) {
-            // Check if we already added our container
-            if ($('.discogs-enhancer-demand-container', parent as HTMLElement)) return
+        const demandContainer = create('div', {
+            class: 'discogs-enhancer-demand-container',
+            style: 'padding: 5px 0; font-size: 13px; margin-top: 5px;'
+        }, [
+            create('span', { class: 'link_text' }, ['Demand Index: ']),
+            create('span', { style: 'font-weight: bold; color: #f00; margin-left: 5px;' }, [ratio])
+        ])
 
-            const demandContainer = create('div', {
-                class: 'discogs-enhancer-demand-container',
-                style: 'padding: 5px 0; font-size: 13px; margin-top: 5px;'
-            }, [
-                create('span', { class: 'link_text' }, ['Demand Index: ']),
-                create('span', { style: 'font-weight: bold; color: #f00; margin-left: 5px;' }, [ratio])
-            ])
-
-            // Insert after the stats section (the UL)
-            parent.insertBefore(demandContainer, statsSection.nextSibling)
-            console.info(`Discogs Enhancer: Demand Index (${ratio}) added safely as sibling.`)
-        } else {
-            console.warn('Discogs Enhancer: Parent of stats section not found, cannot safely inject.')
-        }
+        // Insert after the stats section (the UL)
+        parent.insertBefore(demandContainer, statsSection.nextSibling)
+        console.info(`Discogs Enhancer: Demand Index (${ratio}) added safely as sibling.`)
     }
 }
 

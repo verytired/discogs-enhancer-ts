@@ -14,15 +14,20 @@ const manifest = defineManifest(async (_env) => ({
     version_name: version,
     action: {
         default_popup: 'index.html',
+        default_icon: {
+            16: 'icon.png',
+            48: 'icon.png',
+            128: 'icon.png',
+        }
     },
     options_ui: {
         page: 'src/options/index.html',
         open_in_tab: true
     },
     icons: {
-        16: 'public/vite.svg',
-        48: 'public/vite.svg',
-        128: 'public/vite.svg',
+        16: 'icon.png',
+        48: 'icon.png',
+        128: 'icon.png',
     },
     content_scripts: [
         {

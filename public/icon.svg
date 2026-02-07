@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Vinyl Record Body -->
+  <circle cx="64" cy="64" r="64" fill="#111" />
+  
+  <!-- Grooves (subtle details) -->
+  <circle cx="64" cy="64" r="58" fill="none" stroke="#222" stroke-width="1" />
+  <circle cx="64" cy="64" r="54" fill="none" stroke="#222" stroke-width="1" />
+  <circle cx="64" cy="64" r="50" fill="none" stroke="#222" stroke-width="1" />
+  <circle cx="64" cy="64" r="46" fill="none" stroke="#222" stroke-width="1" />
+  <circle cx="64" cy="64" r="42" fill="none" stroke="#222" stroke-width="1" />
+  <circle cx="64" cy="64" r="38" fill="none" stroke="#222" stroke-width="1" />
+  
+  <!-- Label -->
+  <circle cx="64" cy="64" r="28" fill="#F57C00" />
+  
+  <!-- Center Hole -->
+  <circle cx="64" cy="64" r="4" fill="#FFF" />
+</svg>

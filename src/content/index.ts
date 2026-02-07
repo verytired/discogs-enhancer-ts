@@ -28,8 +28,8 @@ watchSettings((changes) => {
     if (changes.darkMode !== undefined) {
         applyDarkMode(changes.darkMode!)
     }
-    if (changes.appleMusic !== undefined) {
-        applyAppleMusicState(changes.appleMusic!)
+    if (changes.hideAppleMusic !== undefined) {
+        applyAppleMusicState(changes.hideAppleMusic!)
     }
 })
 

@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { initDemandIndex } from './index'
 
-// Mock storage
 vi.mock('../../utils/storage', () => ({
     getSettings: vi.fn().mockResolvedValue({ demandIndex: true })
 }))
 
-describe('Demand Index Logic', () => {
+describe('Demand Index Logic (v0.1.3)', () => {
     beforeEach(() => {
         document.body.innerHTML = ''
         vi.useFakeTimers()
@@ -18,7 +17,6 @@ describe('Demand Index Logic', () => {
     })
 
     it('Legacy Layout: should inject demand index correctly', async () => {
-        // Setup legacy DOM structure
         document.body.innerHTML = `
             <div class="statistics">
                 <div class="section_content">
@@ -38,8 +36,7 @@ describe('Demand Index Logic', () => {
         expect(container?.textContent).toContain('0.50')
     })
 
-    it('Modern Layout (Anchor tags): should inject demand index', async () => {
-        // Setup modern DOM structure (simulating potential new layout)
+    it('Modern Layout (Anchor tags only): should inject demand index', async () => {
         document.body.innerHTML = `
             <div class="some-container">
                  <a href="/release/stats">Have: 200</a>
@@ -50,36 +47,31 @@ describe('Demand Index Logic', () => {
         await initDemandIndex()
         await vi.advanceTimersByTimeAsync(3100)
 
-        const container = document.querySelector('.discogs-enhancer-demand-container')
-        expect(container).not.toBeNull()
-        expect(container?.textContent).toContain('0.20')
+        expect(document.querySelector('.discogs-enhancer-demand-container')).not.toBeNull()
+        expect(document.querySelector('.discogs-enhancer-demand-container')?.textContent).toContain('0.20')
     })
 
-    it('Robustness: Text nodes with noise and varying formats', async () => {
-        // Setup unstructured/noisy DOM
+    it('Live Site Layout (Split Span/Anchor): should inject demand index', async () => {
+        // As seen on live site: <li><span>Have:</span><a href="...">3939</a></li>
         document.body.innerHTML = `
-            <div id="wrapper">
-                 <div><span>  Have: 1,000  </span><br></div>
-                 <section>
-                    <div><span>  Want: 500  </span></div>
-                 </section>
-            </div>
+            <ul>
+                <li>
+                    <span>Here is Have:</span>
+                    <a href="#">3,939</a>
+                </li>
+                <li>
+                    <span>Here is Want:</span>
+                    <a href="#">576</a>
+                </li>
+            </ul>
         `
 
         await initDemandIndex()
         await vi.advanceTimersByTimeAsync(3100)
 
-        // With strict v0.1.1 logic, this will fail.
-        // With v0.1.2 robust logic, this *might* pass if common parent finding is good.
-        // Actually, deeply nested structures are hard.
-        // But let's verify if our fix handles it.
-
         const container = document.querySelector('.discogs-enhancer-demand-container')
-        // In this specific test case, common parent is 'wrapper'.
-        // If our logic injects into wrapper, it works.
-
-        // For now, let's just assert it finds something, or fail if not implemented.
         expect(container).not.toBeNull()
-        expect(container?.textContent).toContain('0.50')
+        // 576 / 3939 = 0.146... -> 0.15
+        expect(container?.textContent).toContain('0.15')
     })
 })

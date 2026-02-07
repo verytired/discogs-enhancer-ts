@@ -6,7 +6,7 @@ import packageJson from '../package.json'
 const { version } = packageJson
 
 // Manifest V3 definition
-const manifest = defineManifest(async (_env) => ({
+const manifest = defineManifest(async () => ({
     manifest_version: 3,
     name: "Discogs Enhancer (TypeSript Re-implementation)",
     description: "Adds useful features and functionality to Discogs.com",

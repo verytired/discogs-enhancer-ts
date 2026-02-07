@@ -41,7 +41,7 @@ watchSettings((changes) => {
 })
 
 // Basic debounce to prevent too many calls
-let timeoutId: any
+let timeoutId: NodeJS.Timeout | undefined
 const observer = new MutationObserver(() => {
     if (timeoutId) clearTimeout(timeoutId)
     timeoutId = setTimeout(() => {

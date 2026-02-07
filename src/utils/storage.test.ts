@@ -13,8 +13,8 @@ const mockStorage = {
 global.chrome = {
     storage: {
         local: mockStorage,
-    } as any,
-} as any
+    } as unknown as chrome.storage.LocalStorageArea,
+} as unknown as typeof chrome
 
 describe('Storage Utils', () => {
     beforeEach(() => {

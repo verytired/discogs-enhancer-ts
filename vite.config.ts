@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
+import { defineConfig, type Plugin } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import manifest from './src/manifest'
@@ -10,9 +10,8 @@ const isTest = process.env.NODE_ENV === 'test'
 export default defineConfig({
   plugins: [
     react(),
-    // @ts-ignore
     !isTest && crx({ manifest }),
-  ].filter(Boolean) as any[],
+  ].filter(Boolean) as unknown as Plugin[],
   test: {
     environment: 'happy-dom',
     setupFiles: ['./src/setupTests.ts'],

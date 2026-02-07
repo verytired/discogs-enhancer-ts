@@ -4,21 +4,15 @@ let appleMusicStyle: HTMLStyleElement | null = null
 
 export const initAppleMusic = () => {
     getSettings().then((settings) => {
-        applyAppleMusicState(settings.appleMusic)
+        applyAppleMusicState(settings.hideAppleMusic)
     })
 }
 
-export const applyAppleMusicState = (shouldShow: boolean) => {
-    // If shouldShow is true, we want to see it -> Remove hiding style
-    // If shouldShow is false, we want to hide it -> Add hiding style
+export const applyAppleMusicState = (shouldHide: boolean) => {
+    // If shouldHide is true, we want to hide it -> Add hiding style
+    // If shouldHide is false, we want to see it -> Remove hiding style
 
-    if (shouldShow) {
-        if (appleMusicStyle) {
-            appleMusicStyle.remove()
-            appleMusicStyle = null
-            console.info('Discogs Enhancer: Apple Music shown')
-        }
-    } else {
+    if (shouldHide) {
         if (!appleMusicStyle) {
             appleMusicStyle = document.createElement('style')
             // Selector for Apple Music player/container.
@@ -36,6 +30,12 @@ export const applyAppleMusicState = (shouldShow: boolean) => {
             `
             document.head.appendChild(appleMusicStyle)
             console.info('Discogs Enhancer: Apple Music hidden')
+        }
+    } else {
+        if (appleMusicStyle) {
+            appleMusicStyle.remove()
+            appleMusicStyle = null
+            console.info('Discogs Enhancer: Apple Music shown')
         }
     }
 }

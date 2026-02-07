@@ -20,48 +20,54 @@ function App() {
   if (!settings) return <div>Loading...</div>
 
   return (
-    <div className="card">
-      <h1>Discogs Enhancer</h1>
-      <div className="settings">
-        <label>
+    <div className="container">
+      <div className="header">
+        <h1>Discogs Enhancer</h1>
+      </div>
+
+      <div className="settings-list">
+        <label className="setting-item">
           <input
             type="checkbox"
             checked={settings.darkMode}
             onChange={() => toggleSetting('darkMode')}
           />
-          Dark Mode
+          <span>Dark Mode</span>
         </label>
-        <br />
-        <label>
+
+        <label className="setting-item">
           <input
             type="checkbox"
             checked={settings.marketplaceFilter}
             onChange={() => toggleSetting('marketplaceFilter')}
           />
-          Marketplace Filter
+          <span>Marketplace Filter</span>
         </label>
-        <br />
-        <label>
+
+        <label className="setting-item">
           <input
             type="checkbox"
             checked={settings.demandIndex}
             onChange={() => toggleSetting('demandIndex')}
           />
-          Demand Index
+          <span>Demand Index</span>
         </label>
-        <br />
-        <label>
+
+        <label className="setting-item">
           <input
             type="checkbox"
-            checked={settings.appleMusic}
-            onChange={() => toggleSetting('appleMusic')}
+            checked={settings.hideAppleMusic}
+            onChange={() => toggleSetting('hideAppleMusic')}
           />
-          Show Apple Music
+          <span>Hide Apple Music</span>
         </label>
       </div>
-      <button onClick={() => chrome.runtime.openOptionsPage()}>
-        Open Full Settings
-      </button>
+
+      <div className="footer">
+        <button className="open-options-btn" onClick={() => chrome.runtime.openOptionsPage()}>
+          Open Full Settings
+        </button>
+      </div>
     </div>
   )
 }

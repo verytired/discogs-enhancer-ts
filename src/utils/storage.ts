@@ -4,7 +4,7 @@ export interface UserSettings {
     darkMode: boolean
     marketplaceFilter: boolean
     demandIndex: boolean
-    appleMusic: boolean
+    hideAppleMusic: boolean
     // Add more settings here
 }
 
@@ -12,7 +12,7 @@ const defaultSettings: UserSettings = {
     darkMode: false,
     marketplaceFilter: false,
     demandIndex: true,
-    appleMusic: true, // Show by default
+    hideAppleMusic: true, // Hide by default
 }
 
 export const getSettings = (): Promise<UserSettings> => {

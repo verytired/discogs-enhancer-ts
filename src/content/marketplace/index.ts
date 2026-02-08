@@ -1,6 +1,7 @@
 import { getSettings } from '../../utils/storage'
 import { $$ } from '../utils/dom'
 import { initBlockSellers } from './blockSellers'
+import { initSortByTotal } from './sort'
 
 export const initMarketplace = () => {
     console.info('Discogs Enhancer: Marketplace module initialized')
@@ -12,6 +13,7 @@ export const initMarketplace = () => {
 
     // Initialize Block Sellers feature
     initBlockSellers()
+    initSortByTotal()
 
     getSettings().then((settings) => {
         if (settings.marketplaceFilter) {

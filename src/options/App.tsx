@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { getSettings, saveSettings, type UserSettings } from '../utils/storage'
+import { ToggleSwitch } from './components/ToggleSwitch'
 
 function App() {
   const [settings, setSettings] = useState<UserSettings | null>(null)
@@ -17,47 +18,52 @@ function App() {
     saveSettings({ [key]: newValue })
   }
 
-  if (!settings) return <div>Loading...</div>
+  if (!settings) return <div className="loading">Loading...</div>
 
   return (
-    <div className="card">
-      <h1>Discogs Enhancer Settings</h1>
-      <div className="settings">
-        <label>
-          <input
-            type="checkbox"
+    <div className="container">
+      <div className="card">
+        <h1>Discogs Enhancer</h1>
+
+        <div className="section">
+          <div className="section-title">Appearance</div>
+          <ToggleSwitch
+            label="Dark Mode"
+            description="Enable dark theme for Discogs interface"
             checked={settings.darkMode}
             onChange={() => toggleSetting('darkMode')}
           />
-          Dark Mode
-        </label>
-        <br />
-        <label>
-          <input
-            type="checkbox"
-            checked={settings.marketplaceFilter}
-            onChange={() => toggleSetting('marketplaceFilter')}
-          />
-          Marketplace Filter
-        </label>
-        <br />
-        <label>
-          <input
-            type="checkbox"
+        </div>
+
+        <div className="section">
+          <div className="section-title">Marketplace</div>
+          <ToggleSwitch
+            label="Demand Index"
+            description="Show Want/Have ratio on release pages"
             checked={settings.demandIndex}
             onChange={() => toggleSetting('demandIndex')}
           />
-          Demand Index
-        </label>
-        <br />
-        <label>
-          <input
-            type="checkbox"
+          <ToggleSwitch
+            label="Marketplace Filter"
+            description="Enable advanced filtering options"
+            checked={settings.marketplaceFilter}
+            onChange={() => toggleSetting('marketplaceFilter')}
+          />
+        </div>
+
+        <div className="section">
+          <div className="section-title">General</div>
+          <ToggleSwitch
+            label="Hide Apple Music"
+            description="Remove Apple Music links from pages"
             checked={settings.hideAppleMusic}
             onChange={() => toggleSetting('hideAppleMusic')}
           />
-          Hide Apple Music
-        </label>
+        </div>
+      </div>
+
+      <div style={{ textAlign: 'center', color: '#999', fontSize: '12px', marginBottom: '10px' }}>
+        v{chrome.runtime?.getManifest ? chrome.runtime.getManifest().version : '0.0.0'}
       </div>
     </div>
   )

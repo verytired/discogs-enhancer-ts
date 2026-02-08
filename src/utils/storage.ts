@@ -5,6 +5,7 @@ export interface UserSettings {
     marketplaceFilter: boolean
     demandIndex: boolean
     hideAppleMusic: boolean
+    infiniteScroll: boolean
     // Add more settings here
 }
 
@@ -13,6 +14,7 @@ const defaultSettings: UserSettings = {
     marketplaceFilter: false,
     demandIndex: true,
     hideAppleMusic: true, // Hide by default
+    infiniteScroll: true,
 }
 
 export const getSettings = (): Promise<UserSettings> => {

@@ -3,6 +3,7 @@ import './styles/dark-mode.css'
 import { initMarketplace } from './marketplace'
 import { initDemandIndex, removeDemandIndex } from './demand-index'
 import { initAppleMusic, applyAppleMusicState } from './apple-music'
+import { initActualDates } from './general/actualDates'
 
 console.info('Discogs Enhancer: Content script loaded')
 
@@ -22,6 +23,7 @@ getSettings().then((settings) => {
 initMarketplace()
 initDemandIndex()
 initAppleMusic()
+initActualDates()
 
 // Watch for changes
 watchSettings((changes) => {

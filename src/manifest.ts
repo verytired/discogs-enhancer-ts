@@ -13,7 +13,7 @@ const manifest = defineManifest(async () => ({
     version,
     version_name: version,
     action: {
-        default_popup: 'index.html',
+        default_popup: 'src/options/index.html',
         default_icon: {
             16: 'icon.png',
             48: 'icon.png',
@@ -42,7 +42,8 @@ const manifest = defineManifest(async () => ({
     permissions: [
         'storage',
         'activeTab',
-        'scripting'
+        'scripting',
+        'contextMenus'
     ],
     web_accessible_resources: [
         {

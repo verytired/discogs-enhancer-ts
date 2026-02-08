@@ -5,6 +5,7 @@ export interface UserSettings {
     marketplaceFilter: boolean
     demandIndex: boolean
     hideAppleMusic: boolean
+    infiniteScroll: boolean
     // Add more settings here
 }
 
@@ -13,6 +14,7 @@ const defaultSettings: UserSettings = {
     marketplaceFilter: false,
     demandIndex: true,
     hideAppleMusic: true, // Hide by default
+    infiniteScroll: true,
 }
 
 export const getSettings = (): Promise<UserSettings> => {
@@ -43,4 +45,30 @@ export const watchSettings = (callback: (changes: Partial<UserSettings>) => void
             callback(newSettings)
         }
     })
+}
+
+// Blocklist helpers
+export const getBlockList = async (): Promise<string[]> => {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(['blockedSellers'], (result) => {
+            resolve((result.blockedSellers || []) as string[])
+        })
+    })
+}
+
+export const addBlockedSeller = async (sellerName: string): Promise<string[]> => {
+    const list = await getBlockList()
+    if (!list.includes(sellerName)) {
+        const updated = [...list, sellerName]
+        await chrome.storage.local.set({ blockedSellers: updated })
+        return updated
+    }
+    return list
+}
+
+export const removeBlockedSeller = async (sellerName: string): Promise<string[]> => {
+    const list = await getBlockList()
+    const updated = list.filter((s) => s !== sellerName)
+    await chrome.storage.local.set({ blockedSellers: updated })
+    return updated
 }

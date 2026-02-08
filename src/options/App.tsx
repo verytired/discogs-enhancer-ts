@@ -49,6 +49,12 @@ function App() {
             checked={settings.marketplaceFilter}
             onChange={() => toggleSetting('marketplaceFilter')}
           />
+          <ToggleSwitch
+            label="Infinite Scroll"
+            description="Automatically load next page on marketplace"
+            checked={settings.infiniteScroll}
+            onChange={() => toggleSetting('infiniteScroll')}
+          />
         </div>
 
         <div className="section">

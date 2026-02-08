@@ -1,7 +1,8 @@
-import { getSettings } from '../../utils/storage'
+import { getSettings, watchSettings } from '../../utils/storage'
 import { $$ } from '../utils/dom'
 import { initBlockSellers } from './blockSellers'
 import { initSortByTotal } from './sort'
+import { initInfiniteScroll } from './infiniteScroll'
 
 export const initMarketplace = () => {
     console.info('Discogs Enhancer: Marketplace module initialized')
@@ -17,26 +18,46 @@ export const initMarketplace = () => {
 
     getSettings().then((settings) => {
         if (settings.marketplaceFilter) {
-            applyMarketplaceFilter()
+            initMarketplaceFilter()
+        }
+        initInfiniteScroll(settings.infiniteScroll)
+    })
+
+    watchSettings((changes) => {
+        if (changes.marketplaceFilter !== undefined) {
+            if (changes.marketplaceFilter) {
+                initMarketplaceFilter()
+            } else {
+                removeMarketplaceFilter()
+            }
+        }
+        if (changes.infiniteScroll !== undefined) {
+            initInfiniteScroll(changes.infiniteScroll)
         }
     })
 }
 
-const applyMarketplaceFilter = () => {
+let marketplaceFilterActive = false
+
+const initMarketplaceFilter = () => {
+    if (marketplaceFilterActive) return
+    marketplaceFilterActive = true
     console.info('Discogs Enhancer: Applying marketplace filter...')
 
     // Example: Highlight all rows in the marketplace table
-    // Discogs uses various table structures, but commonly .marketplace_table tr
     const rows = $$('.marketplace_table tr')
-    if (rows.length === 0) {
-        // Fallback for newer react-based layouts if any, or different pages
-        const items = $$('.marketplace_item') // hypothetical class
-        items.forEach(item => {
-            item.style.border = '2px solid green'
-        })
-    }
-
     rows.forEach(row => {
         row.style.borderLeft = '5px solid #00f'
+    })
+}
+
+const removeMarketplaceFilter = () => {
+    if (!marketplaceFilterActive) return
+    marketplaceFilterActive = false
+    console.info('Discogs Enhancer: Removing marketplace filter...')
+
+    const rows = $$('.marketplace_table tr')
+    rows.forEach(row => {
+        row.style.borderLeft = ''
     })
 }

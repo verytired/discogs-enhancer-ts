@@ -2,7 +2,7 @@ export const parsePrice = (priceStr: string): number | null => {
     if (!priceStr || priceStr.toLowerCase().includes('unavailable')) return null
 
     // Remove "+ " prefix if exists (shipping)
-    let cleanStr = priceStr.replace(/^\+\s*/, '')
+    const cleanStr = priceStr.replace(/^\+\s*/, '')
 
     // Basic cleanup: remove currency symbols and text
     // Handles: "¥3,500", "$10.00", "€15.20", "CA$50.00", "+ £5.00 shipping"

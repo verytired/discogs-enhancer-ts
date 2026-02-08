@@ -8,7 +8,7 @@ global.chrome = {
     storage: {
         local: {
             get: vi.fn((keys, callback) => {
-                const result: any = {}
+                const result: Record<string, unknown> = {}
                 if (Array.isArray(keys)) {
                     keys.forEach(k => result[k] = storageMock.get(k))
                 } else if (typeof keys === 'string') {
@@ -28,7 +28,7 @@ global.chrome = {
             addListener: vi.fn()
         }
     }
-} as any
+} as unknown as typeof chrome
 
 describe('Block List Storage', () => {
     beforeEach(() => {

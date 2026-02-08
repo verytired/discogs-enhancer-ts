@@ -53,18 +53,21 @@ test.describe('Extension Options Page', () => {
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(1000)
 
-        const checkboxes = page.locator('input[type="checkbox"]')
-        const count = await checkboxes.count()
+        // Find any toggle switch
+        const toggles = page.locator('.toggle-switch-container')
+        const count = await toggles.count()
+        expect(count).toBeGreaterThan(0)
 
         if (count > 0) {
-            const checkbox = checkboxes.first()
+            const toggle = toggles.first()
+            const checkbox = toggle.locator('input[type="checkbox"]')
             const initialState = await checkbox.isChecked()
 
-            await checkbox.click()
+            await toggle.click()
             await page.waitForTimeout(300)
             expect(await checkbox.isChecked()).not.toBe(initialState)
 
-            await checkbox.click()
+            await toggle.click()
             await page.waitForTimeout(300)
             expect(await checkbox.isChecked()).toBe(initialState)
         }
@@ -138,21 +141,13 @@ test.describe('Settings Integration', () => {
         await optionsPage.waitForLoadState('networkidle')
         await optionsPage.waitForTimeout(1000)
 
-        // Find Demand Index checkbox
-        const labels = optionsPage.locator('label')
-        const labelCount = await labels.count()
+        // Find Demand Index toggle
+        const demandIndexToggle = optionsPage.locator('.toggle-switch-container').filter({ hasText: 'Demand Index' })
+        const checkbox = demandIndexToggle.locator('input[type="checkbox"]')
 
-        for (let i = 0; i < labelCount; i++) {
-            const label = labels.nth(i)
-            const text = await label.textContent()
-            if (text && text.toLowerCase().includes('demand')) {
-                const checkbox = label.locator('input[type="checkbox"]')
-                if (await checkbox.isChecked()) {
-                    await checkbox.uncheck()
-                    await optionsPage.waitForTimeout(500)
-                }
-                break
-            }
+        if (await checkbox.isChecked()) {
+            await demandIndexToggle.click()
+            await optionsPage.waitForTimeout(500)
         }
         await optionsPage.close()
 
@@ -183,17 +178,11 @@ test.describe('Settings Integration', () => {
         await optionsPage2.waitForLoadState('networkidle')
         await optionsPage2.waitForTimeout(1000)
 
-        const labels2 = optionsPage2.locator('label')
-        for (let i = 0; i < await labels2.count(); i++) {
-            const label = labels2.nth(i)
-            const text = await label.textContent()
-            if (text && text.toLowerCase().includes('demand')) {
-                const checkbox = label.locator('input[type="checkbox"]')
-                if (!(await checkbox.isChecked())) {
-                    await checkbox.check()
-                }
-                break
-            }
+        const demandIndexToggle2 = optionsPage2.locator('.toggle-switch-container').filter({ hasText: 'Demand Index' })
+        const checkbox2 = demandIndexToggle2.locator('input[type="checkbox"]')
+
+        if (!(await checkbox2.isChecked())) {
+            await demandIndexToggle2.click()
         }
         await optionsPage2.close()
     })

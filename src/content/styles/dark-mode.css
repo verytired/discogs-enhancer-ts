@@ -34,6 +34,7 @@ body.discogs-enhancer-dark-mode .statistics {
 }
 
 /* Headers */
+/* Headers */
 body.discogs-enhancer-dark-mode h1,
 body.discogs-enhancer-dark-mode h2,
 body.discogs-enhancer-dark-mode h3,
@@ -42,6 +43,25 @@ body.discogs-enhancer-dark-mode h5,
 body.discogs-enhancer-dark-mode h6,
 body.discogs-enhancer-dark-mode .section_header h3 {
   color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* Header Containers & Specific Sections */
+body.discogs-enhancer-dark-mode .section_header,
+body.discogs-enhancer-dark-mode .widget_header,
+body.discogs-enhancer-dark-mode .box_header,
+body.discogs-enhancer-dark-mode .tracklist_header,
+body.discogs-enhancer-dark-mode .profile_header,
+body.discogs-enhancer-dark-mode #release-stats,
+body.discogs-enhancer-dark-mode .head {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border-bottom-color: #444 !important;
+}
+
+/* Fix for stats specifically */
+body.discogs-enhancer-dark-mode #release-stats h3 {
+  background-color: transparent !important;
 }
 
 /* Tables */

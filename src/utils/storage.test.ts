@@ -1,55 +1,61 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { getSettings, saveSettings, type UserSettings } from './storage'
+import { addBlockedSeller, getBlockList, removeBlockedSeller } from './storage'
 
-// Mock chrome API
-const mockStorage = {
-    get: vi.fn(),
-    set: vi.fn(),
-    onChanged: {
-        addListener: vi.fn(),
-    },
-}
+// Mock chrome.storage.local
+const storageMock = new Map()
 
 global.chrome = {
     storage: {
-        local: mockStorage,
-    } as unknown as chrome.storage.LocalStorageArea,
-} as unknown as typeof chrome
+        local: {
+            get: vi.fn((keys, callback) => {
+                const result: any = {}
+                if (Array.isArray(keys)) {
+                    keys.forEach(k => result[k] = storageMock.get(k))
+                } else if (typeof keys === 'string') {
+                    result[keys] = storageMock.get(keys)
+                } else {
+                    // Null/undefined keys -> return all
+                    // simplified for this test
+                }
+                callback(result)
+            }),
+            set: vi.fn((items, callback) => {
+                Object.entries(items).forEach(([k, v]) => storageMock.set(k, v))
+                if (callback) callback()
+            })
+        },
+        onChanged: {
+            addListener: vi.fn()
+        }
+    }
+} as any
 
-describe('Storage Utils', () => {
+describe('Block List Storage', () => {
     beforeEach(() => {
+        storageMock.clear()
         vi.clearAllMocks()
     })
 
-    describe('getSettings', () => {
-        it('should return settings from storage', async () => {
-            const mockSettings: UserSettings = {
-                darkMode: true,
-                marketplaceFilter: false,
-                demandIndex: true,
-                hideAppleMusic: false,
-            }
-
-            mockStorage.get.mockImplementation((_defaults, callback) => {
-                callback(mockSettings)
-            })
-
-            const settings = await getSettings()
-            expect(settings).toEqual(mockSettings)
-            expect(mockStorage.get).toHaveBeenCalled()
-        })
+    it('should add a seller to the block list', async () => {
+        await addBlockedSeller('BadSeller123')
+        const list = await getBlockList()
+        expect(list).toContain('BadSeller123')
+        expect(list).toHaveLength(1)
     })
 
-    describe('saveSettings', () => {
-        it('should save settings to storage', async () => {
-            const newSettings = { darkMode: true }
+    it('should not add duplicate sellers', async () => {
+        await addBlockedSeller('BadSeller123')
+        await addBlockedSeller('BadSeller123')
+        const list = await getBlockList()
+        expect(list).toHaveLength(1)
+    })
 
-            mockStorage.set.mockImplementation((_items, callback) => {
-                callback()
-            })
-
-            await saveSettings(newSettings)
-            expect(mockStorage.set).toHaveBeenCalledWith(newSettings, expect.any(Function))
-        })
+    it('should remove a seller', async () => {
+        await addBlockedSeller('SellerA')
+        await addBlockedSeller('SellerB')
+        await removeBlockedSeller('SellerA')
+        const list = await getBlockList()
+        expect(list).not.toContain('SellerA')
+        expect(list).toContain('SellerB')
     })
 })

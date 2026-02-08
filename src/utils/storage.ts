@@ -44,3 +44,29 @@ export const watchSettings = (callback: (changes: Partial<UserSettings>) => void
         }
     })
 }
+
+// Blocklist helpers
+export const getBlockList = async (): Promise<string[]> => {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(['blockedSellers'], (result) => {
+            resolve((result.blockedSellers || []) as string[])
+        })
+    })
+}
+
+export const addBlockedSeller = async (sellerName: string): Promise<string[]> => {
+    const list = await getBlockList()
+    if (!list.includes(sellerName)) {
+        const updated = [...list, sellerName]
+        await chrome.storage.local.set({ blockedSellers: updated })
+        return updated
+    }
+    return list
+}
+
+export const removeBlockedSeller = async (sellerName: string): Promise<string[]> => {
+    const list = await getBlockList()
+    const updated = list.filter((s) => s !== sellerName)
+    await chrome.storage.local.set({ blockedSellers: updated })
+    return updated
+}

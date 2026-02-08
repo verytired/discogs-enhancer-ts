@@ -30,11 +30,7 @@ function applyDates() {
         if (el.hasAttribute('data-actual-date-processed')) return
 
         // Try to find the date string
-        let dateStr = el.getAttribute('title') || el.getAttribute('datetime')
-
-        // Check text content if title is missing (sometimes "YYYY-MM-DD" is text)
-        // But we want to convert RELATIVE dates, so if text is absolute, we might skip?
-        // Let's stick to title/datetime for reliability first.
+        const dateStr = el.getAttribute('title') || el.getAttribute('datetime')
 
         if (!dateStr) return
 

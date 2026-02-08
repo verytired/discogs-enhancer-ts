@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { test as base, chromium, type BrowserContext } from '@playwright/test'
 import path from 'path'
 import { fileURLToPath } from 'url'

@@ -42,7 +42,8 @@ const manifest = defineManifest(async () => ({
     permissions: [
         'storage',
         'activeTab',
-        'scripting'
+        'scripting',
+        'contextMenus'
     ],
     web_accessible_resources: [
         {

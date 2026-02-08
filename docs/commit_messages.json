@@ -1,5 +1,0 @@
-[
-    "fix(deps): bump version to 0.1.1 and update package-lock",
-    "build(test): setup vitest and testing infrastructure",
-    "ci: add github workflow for PR checks"
-]

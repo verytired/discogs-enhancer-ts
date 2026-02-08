@@ -1,5 +1,6 @@
 import { getSettings } from '../../utils/storage'
 import { $$ } from '../utils/dom'
+import { initBlockSellers } from './blockSellers'
 
 export const initMarketplace = () => {
     console.info('Discogs Enhancer: Marketplace module initialized')
@@ -8,6 +9,9 @@ export const initMarketplace = () => {
     if (!window.location.href.includes('/sell/list') && !window.location.href.includes('/sell/item') && !document.querySelector('.marketplace-table')) {
         return
     }
+
+    // Initialize Block Sellers feature
+    initBlockSellers()
 
     getSettings().then((settings) => {
         if (settings.marketplaceFilter) {

@@ -60,6 +60,12 @@ function App() {
         <div className="section">
           <div className="section-title">General</div>
           <ToggleSwitch
+            label="Max Items Per Page"
+            description="Always show 500 items on Artist and Label pages"
+            checked={settings.maxItemsPerPage}
+            onChange={() => toggleSetting('maxItemsPerPage')}
+          />
+          <ToggleSwitch
             label="Hide Apple Music"
             description="Remove Apple Music links from pages"
             checked={settings.hideAppleMusic}

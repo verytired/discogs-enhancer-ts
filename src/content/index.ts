@@ -4,6 +4,7 @@ import { initMarketplace } from './marketplace'
 import { initDemandIndex, removeDemandIndex } from './demand-index'
 import { initAppleMusic, applyAppleMusicState } from './apple-music'
 import { initActualDates } from './general/actualDates'
+import { initMaxItemsPerPage } from './max-items'
 
 console.info('Discogs Enhancer: Content script loaded')
 
@@ -18,6 +19,10 @@ const applyDarkMode = (isEnabled: boolean) => {
 // Initial load
 getSettings().then((settings) => {
     applyDarkMode(settings.darkMode)
+
+    if (settings.maxItemsPerPage) {
+        initMaxItemsPerPage()
+    }
 })
 
 initMarketplace()
